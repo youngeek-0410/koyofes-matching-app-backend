@@ -8,4 +8,4 @@ daemon = True
 
 # log
 errorlog = "./logs/fastapi_error.log"
-accesslog = "./logs/fastapi_access.log"
+accesslog = "/var/log/fastapi_access.log"

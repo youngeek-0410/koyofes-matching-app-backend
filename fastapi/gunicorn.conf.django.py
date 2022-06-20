@@ -8,4 +8,4 @@ daemon = False  # not to finish process FIXME
 
 # log
 errorlog = "./logs/django_error.log"
-accesslog = "./logs/django_access.log"
+accesslog = "/var/log/django_access.log"
