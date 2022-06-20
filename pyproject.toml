@@ -1,0 +1,22 @@
+# formatter/linter etc
+[tool.black]
+line-length = 119
+
+[tool.flake8]
+max-line-length = 119
+ignore = "W504, W291"
+per-file-ignores = "__init__.py:F401,F403"
+max-complexity = 10
+max-expression-complexity = 7
+max-cognitive-complexity = 7
+
+[tool.isort]
+profile = "black"
+line_length = 119
+
+[tool.mypy]
+python_version = 3.10
+no_strict_optional = true
+ignore_missing_imports = true
+warn_unreachable = true
+check_untyped_defs = true
