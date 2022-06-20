@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+  fastapi:
+    container_name: koyofes-matching-app-fastapi
+    build: ./fastapi
+    volumes:
+      - ./fastapi:/src
+    ports:
+      - 8000:8000
+      - 8001:8001
+    environment:
+      DB_NAME: koyofes-matching-app
+      DB_USER: fastapi
+      DB_PASSWORD: fastapi
+      DB_HOST: postgres
+      DB_PORT: 5432
+      ENV_STATE: local
+    links:
+      - postgres
+    command: ./scripts/runserver.sh
+    # tty: true # FIXME: dosent work?
+  postgres:
+    image: postgres:12
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: fastapi
+      POSTGRES_PASSWORD: fastapi
+      POSTGRES_DB: koyofes-matching-app
+    ports:
+      - 5433:5432
+
+volumes:
+  postgres_data:
