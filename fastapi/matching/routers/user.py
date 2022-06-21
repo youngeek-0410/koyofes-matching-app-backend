@@ -1,15 +1,18 @@
 from typing import Optional
 
 from matching.api import UserAPI
+from matching.dependencies.auth import login_required
 from matching.models import User
 from matching.schemas import CreateUserSchema, ReadUserSchema, UpdateUserSchema
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
 user_router = APIRouter()
 
 
-@user_router.get("/", response_model=ReadUserSchema)
+@user_router.get(
+    "/", response_model=ReadUserSchema, dependencies=[Depends(login_required)]
+)
 async def get(request: Request) -> Optional[User]:
     return UserAPI.get(request)
 
@@ -19,11 +22,13 @@ async def create(request: Request, schema: CreateUserSchema) -> User:
     return UserAPI.create(request, schema)
 
 
-@user_router.put("/", response_model=ReadUserSchema)
+@user_router.put(
+    "/", response_model=ReadUserSchema, dependencies=[Depends(login_required)]
+)
 async def update(request: Request, schema: UpdateUserSchema) -> User:
     return UserAPI.update(request, schema)
 
 
-@user_router.delete("/")
+@user_router.delete("/", dependencies=[Depends(login_required)])
 async def delete(request: Request) -> None:
     return UserAPI.delete(request)

@@ -9,7 +9,7 @@ from fastapi import Request
 class UserAPI:
     @classmethod
     def get(cls, request: Request) -> Optional[User]:
-        return User.objects.filter(username="username").first()
+        return User.objects.filter(uuid=request.user.uuid).first()
 
     @classmethod
     def create(cls, request: Request, schema: CreateUserSchema) -> User:
@@ -17,12 +17,12 @@ class UserAPI:
 
     @classmethod
     def update(cls, request: Request, schema: UpdateUserSchema) -> User:
-        user = User.objects.filter(username="username").first()
-        assert user is not None
-        user.update(**schema.dict())
+        user, _ = User.objects.update_or_create(
+            uuid=request.user.uuid, defaults=schema.dict()
+        )
         return user
 
     @classmethod
     def delete(cls, request: Request) -> None:
-        User.objects.filter(username="username").delete()
+        User.objects.filter(uuid=request.user.uuid).delete()
         return
