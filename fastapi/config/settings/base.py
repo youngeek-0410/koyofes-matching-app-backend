@@ -120,3 +120,7 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 # User
 AUTH_USER_MODEL = "matching.User"
+
+# JWT
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRATION_SECONDS: int = 60 * 60 * 24 * 5

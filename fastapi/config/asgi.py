@@ -25,13 +25,14 @@ application = get_asgi_application()
 """
 FastAPI settings
 """
-from matching.routers import user_router
+from matching.routers import auth_router, user_router
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 fastapp = FastAPI()
 fastapp.include_router(user_router, tags=["users"], prefix="/user")
+fastapp.include_router(auth_router, tags=["auth"], prefix="/auth")
 
 # to mount Django
 fastapp.mount("/django", application)
