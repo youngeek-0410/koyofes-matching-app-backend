@@ -5,7 +5,3 @@ bind = "0.0.0.0:8000"
 workers = 1
 reload = True
 daemon = True
-
-# log
-errorlog = "./logs/fastapi_error.log"
-accesslog = "./logs/fastapi_access.log"

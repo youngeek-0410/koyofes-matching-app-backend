@@ -25,14 +25,29 @@ application = get_asgi_application()
 """
 FastAPI settings
 """
+import logging
+import logging.config
+from datetime import datetime
+
 from matching.middlewares.auth import BackendAuth
 from matching.routers import auth_router, user_router
+from pytz import timezone
 from starlette.middleware.authentication import AuthenticationMiddleware
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from .log import LOGGING
+
 fastapp = FastAPI()
+
+
+def tokyo_time(*args):
+    return datetime.now(timezone("Asia/Tokyo")).timetuple()
+
+
+logging.Formatter.converter = tokyo_time
+logging.config.dictConfig(LOGGING)
 
 # middlewares (後に追加したものが先に実行される)
 fastapp.add_middleware(AuthenticationMiddleware, backend=BackendAuth())

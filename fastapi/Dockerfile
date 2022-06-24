@@ -6,5 +6,8 @@ ENV PYTHONPATH=/src
 
 WORKDIR /src
 
+RUN apt update \
+&& apt install -y --no-install-recommends less
+
 RUN pip install poetry
 RUN poetry config virtualenvs.in-project true
