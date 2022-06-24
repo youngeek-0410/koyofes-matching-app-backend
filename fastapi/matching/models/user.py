@@ -57,14 +57,20 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
 
     # optional user info
     department = models.CharField(
-        _("department"), blank=True, choices=Department.choices(), max_length=20
+        _("department"),
+        blank=True,
+        choices=Department.choices(),
+        max_length=20,
+        null=True,
     )
     grade = models.PositiveSmallIntegerField(
         _("grade"),
         blank=True,
         null=True,
     )
-    sex = models.CharField(_("sex"), blank=True, choices=Sex.choices(), max_length=20)
+    sex = models.CharField(
+        _("sex"), blank=True, choices=Sex.choices(), max_length=20, null=True
+    )
     # profile_image
     MAX_LENGTH_DESCRIPTION = 200
     description = models.CharField(

@@ -55,6 +55,16 @@ class UserAdmin(admin.ModelAdmin):
                 ),
             },
         ),
+        (
+            _("Personal Info"),
+            {
+                "fields": (
+                    "department",
+                    "grade",
+                    "sex",
+                )
+            },
+        ),
     )
     add_fieldsets = (
         (
@@ -68,12 +78,22 @@ class UserAdmin(admin.ModelAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
-    list_display = ("username", "email", "is_verified")
+    list_display = (
+        "username",
+        "email",
+        "is_verified",
+        "department",
+        "grade",
+        "sex",
+    )
     list_filter = (
         "is_staff",
         "is_superuser",
         "is_active",
         "is_verified",
+        "department",
+        "grade",
+        "sex",
     )
     search_fields = ("username", "email")
     ordering = ("-created_at",)

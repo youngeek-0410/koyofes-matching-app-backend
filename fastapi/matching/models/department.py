@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Department(Enum):
+class Department(str, Enum):
     M = "M"
     E = "E"
     I = "I"

@@ -3,7 +3,7 @@ from enum import Enum
 from django.utils.translation import gettext_lazy as _
 
 
-class Sex(Enum):
+class Sex(str, Enum):
     man = _("man")
     woman = _("woman")
     other = _("other")

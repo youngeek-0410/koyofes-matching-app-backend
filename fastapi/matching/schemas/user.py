@@ -1,8 +1,12 @@
+from typing import Optional
+
 from matching.models import User
 from pydantic import BaseModel, Field
 
+from ..models import Department, Sex
 
-class BaseUserSchema(BaseModel):
+
+class RequiredUserInfoSchema(BaseModel):
     username: str = Field(
         ..., min_length=User.MIN_LENGTH_USERNAME, max_length=User.MAX_LENGTH_USERNAME
     )
@@ -12,15 +16,26 @@ class BaseUserSchema(BaseModel):
         orm_mode = True
 
 
-class ReadUserSchema(BaseUserSchema):
+class OptionalUserInfoSchema(BaseModel):
+    department: Optional[Department]
+    sex: Optional[Sex]
+    grade: Optional[int] = Field(None, ge=1, le=5)
+    description: Optional[str] = Field(None, max_length=User.MAX_LENGTH_DESCRIPTION)
+
+    class Config:
+        orm_mode = True
+        use_enum_values = True
+
+
+class ReadUserSchema(RequiredUserInfoSchema, OptionalUserInfoSchema):
     is_verified: bool
 
 
-class CreateUserSchema(BaseUserSchema):
+class CreateUserSchema(RequiredUserInfoSchema):
     pass
 
 
-class UpdateUserSchema(BaseModel):
+class UpdateUserSchema(OptionalUserInfoSchema):
     pass
 
 

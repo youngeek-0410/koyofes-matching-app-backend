@@ -6,3 +6,4 @@
 2. `docker-compose run fastapi poetry run python manage.py collectstatic --noinput`
 3. `docker-compose run fastapi poetry run python manage.py migrate`
 4. `docker-compose run fastapi poetry run python manage.py createsuperuser`
+5. `source ./alias.sh`
