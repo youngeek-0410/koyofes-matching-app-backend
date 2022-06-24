@@ -44,6 +44,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     objects = UserManager()
 
+    MAX_LENGTH_EMAIL = 30
     email = models.EmailField(_("email address"), unique=True)
     MIN_LENGTH_USERNAME = 1
     MAX_LENGTH_USERNAME = 15

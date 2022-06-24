@@ -18,7 +18,8 @@ class UserAPI:
         user = User.objects.filter(email=schema.email).first()
         if user and user.is_verified:
             raise HTTPException(
-                status_code=400, detail="User with that email has already exists."
+                status_code=400,
+                detail=f"User with that email({schema.email}) already exists.",
             )
         elif user and not user.is_verified:
             # await asyncio.get_event_loop().run_in_executor(
@@ -43,10 +44,7 @@ class UserAPI:
     @classmethod
     def delete(cls, request: Request) -> None:
         user = User.objects.filter(uuid=request.user.uuid).first()
-        if not user or not user.is_active:
-            raise HTTPException(
-                status_code=400, detail="User with that uuid not found."
-            )
+        assert user
         user.is_active = False
         user.save()
         return
@@ -55,12 +53,15 @@ class UserAPI:
     def verify_code(cls, request: Request, schema: VerifyCodeSchema) -> User:
         try:
             is_verified = check_verification_code(schema.email, schema.code)
-        except Exception as e:
+        except Exception:
             raise HTTPException(
-                status_code=400, detail=str(e)
-            )  # TODO: セキュリティ的にエラーをレスポンスしない
+                status_code=400,
+                detail="Error: code was expired (10minutes) or approved.",
+            )
         if not is_verified:
-            raise HTTPException(status_code=400, detail="Code was incorrect.")
+            raise HTTPException(
+                status_code=400, detail="Verification code was incorrect."
+            )
 
         user = User.objects.filter(email=schema.email).first()
         assert user

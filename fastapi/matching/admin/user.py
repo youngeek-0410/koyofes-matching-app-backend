@@ -51,6 +51,7 @@ class UserAdmin(admin.ModelAdmin):
                     "is_active",
                     "is_staff",
                     "is_superuser",
+                    "is_verified",
                 ),
             },
         ),
@@ -72,6 +73,7 @@ class UserAdmin(admin.ModelAdmin):
         "is_staff",
         "is_superuser",
         "is_active",
+        "is_verified",
     )
     search_fields = ("username", "email")
     ordering = ("-created_at",)
