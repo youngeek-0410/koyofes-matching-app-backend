@@ -60,6 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         default=False,
         help_text=_("Designates whether the user can log into this admin site."),
     )
+    is_verified = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"

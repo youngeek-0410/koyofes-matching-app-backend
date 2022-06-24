@@ -13,7 +13,7 @@ class BaseUserSchema(BaseModel):
 
 
 class ReadUserSchema(BaseUserSchema):
-    pass
+    is_verified: bool
 
 
 class CreateUserSchema(BaseUserSchema):
@@ -22,3 +22,8 @@ class CreateUserSchema(BaseUserSchema):
 
 class UpdateUserSchema(BaseUserSchema):
     pass
+
+
+class VerifyCodeSchema(BaseModel):
+    email: str = Field(..., regex=r"[^\s]+@[^\s]+")
+    code: str = Field(...)
