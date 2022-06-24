@@ -7,6 +7,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .base import BaseModelMixin
+from .department import Department
+from .sex import Sex
 
 
 class UserManager(BaseUserManager):
@@ -53,6 +55,29 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         max_length=MAX_LENGTH_USERNAME,
     )
 
+    # optional user info
+    department = models.CharField(
+        _("department"), blank=True, choices=Department.choices(), max_length=20
+    )
+    grade = models.PositiveSmallIntegerField(
+        _("grade"),
+        blank=True,
+        null=True,
+    )
+    sex = models.CharField(_("sex"), blank=True, choices=Sex.choices(), max_length=20)
+    # profile_image
+    MAX_LENGTH_DESCRIPTION = 200
+    description = models.CharField(
+        _("description"), blank=True, max_length=MAX_LENGTH_DESCRIPTION
+    )
+
+    # management info
+    is_banned = models.BooleanField(
+        _("is banned"),
+        default=False,
+    )
+
+    # permissions
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -73,3 +98,31 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
+
+    @property
+    def images(self):
+        return UserImage.objects.filter(user=self)
+
+
+def upload_to(instance, filename):
+    local_part, _ = instance.user.email.split("@")
+    return f"user/{local_part}/{filename}"
+
+
+class UserImage(BaseModelMixin):
+    user = models.ForeignKey(
+        "matching.User",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+    )
+    image = models.ImageField(
+        verbose_name=_("image"),
+        upload_to=upload_to,
+    )
+
+    class Meta:
+        verbose_name = _("user image")
+        verbose_name_plural = _("user images")
+
+    def __str__(self):
+        return self.image.url
