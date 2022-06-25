@@ -58,3 +58,4 @@ fastapp.include_router(auth_router, tags=["auth"], prefix="/auth")
 # to mount Django
 fastapp.mount("/django", application)
 fastapp.mount("/static", StaticFiles(directory="static"), name="static")
+fastapp.mount("/media", StaticFiles(directory="media"), name="media")

@@ -1,9 +1,32 @@
-from typing import Optional
+from typing import List, Optional
+from uuid import UUID
 
 from matching.models import User
 from pydantic import BaseModel, Field
 
 from ..models import Department, Sex
+
+
+class ImageSchema(BaseModel):
+    url: str
+
+    class Config:
+        orm_mode = True
+
+
+class UserUUIDSchema(BaseModel):
+    uuid: UUID
+
+    class Config:
+        orm_mode = True
+
+
+class ReadUserImageSchema(BaseModel):
+    image: ImageSchema
+    user: UserUUIDSchema
+
+    class Config:
+        orm_mode = True
 
 
 class RequiredUserInfoSchema(BaseModel):
@@ -29,6 +52,7 @@ class OptionalUserInfoSchema(BaseModel):
 
 class ReadUserSchema(RequiredUserInfoSchema, OptionalUserInfoSchema):
     is_verified: bool
+    images: Optional[List[ReadUserImageSchema]]
 
 
 class CreateUserSchema(RequiredUserInfoSchema):

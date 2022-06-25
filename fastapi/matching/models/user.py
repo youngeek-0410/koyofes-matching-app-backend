@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -71,7 +73,6 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     sex = models.CharField(
         _("sex"), blank=True, choices=Sex.choices(), max_length=20, null=True
     )
-    # profile_image
     MAX_LENGTH_DESCRIPTION = 200
     description = models.CharField(
         _("description"), blank=True, max_length=MAX_LENGTH_DESCRIPTION
@@ -99,15 +100,15 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     REQUIRED_FIELDS = ["username"]
 
     def __str__(self):
-        return self.username
+        return f"{self.username} ({self.email.split('@')[0]})"
 
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
 
     @property
-    def images(self):
-        return UserImage.objects.filter(user=self)
+    def images(self) -> Optional[List["UserImage"]]:
+        return list(UserImage.objects.filter(user=self))
 
 
 def upload_to(instance, filename):

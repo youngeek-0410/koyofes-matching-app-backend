@@ -5,12 +5,13 @@ from matching.dependencies.auth import login_required
 from matching.models import User
 from matching.schemas import (
     CreateUserSchema,
+    ReadUserImageSchema,
     ReadUserSchema,
     UpdateUserSchema,
     VerifyCodeSchema,
 )
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, UploadFile
 
 user_router = APIRouter()
 
@@ -50,3 +51,12 @@ async def delete(request: Request) -> None:
 )
 async def verify_code(request: Request, schema: VerifyCodeSchema):
     return UserAPI.verify_code(request, schema)
+
+
+@user_router.post(
+    "/upload-image",
+    response_model=ReadUserImageSchema,
+    dependencies=[Depends(login_required)],
+)
+async def upload_image(request: Request, file: UploadFile):
+    return UserAPI.upload_image(request, file)
