@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -7,6 +9,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .base import BaseModelMixin
+from .department import Department
+from .sex import Sex
 
 
 class UserManager(BaseUserManager):
@@ -44,6 +48,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
     objects = UserManager()
 
+    MAX_LENGTH_EMAIL = 30
     email = models.EmailField(_("email address"), unique=True)
     MIN_LENGTH_USERNAME = 1
     MAX_LENGTH_USERNAME = 15
@@ -52,6 +57,34 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         max_length=MAX_LENGTH_USERNAME,
     )
 
+    # optional user info
+    department = models.CharField(
+        _("department"),
+        blank=True,
+        choices=Department.choices(),
+        max_length=20,
+        null=True,
+    )
+    grade = models.PositiveSmallIntegerField(
+        _("grade"),
+        blank=True,
+        null=True,
+    )
+    sex = models.CharField(
+        _("sex"), blank=True, choices=Sex.choices(), max_length=20, null=True
+    )
+    MAX_LENGTH_DESCRIPTION = 200
+    description = models.CharField(
+        _("description"), blank=True, max_length=MAX_LENGTH_DESCRIPTION
+    )
+
+    # management info
+    is_banned = models.BooleanField(
+        _("is banned"),
+        default=False,
+    )
+
+    # permissions
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -60,14 +93,43 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModelMixin):
         default=False,
         help_text=_("Designates whether the user can log into this admin site."),
     )
+    is_verified = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
     def __str__(self):
-        return self.username
+        return f"{self.username} ({self.email.split('@')[0]})"
 
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
+
+    @property
+    def images(self) -> Optional[List["UserImage"]]:
+        return list(UserImage.objects.filter(user=self))
+
+
+def upload_to(instance, filename):
+    local_part, _ = instance.user.email.split("@")
+    return f"user/{local_part}/{filename}"
+
+
+class UserImage(BaseModelMixin):
+    user = models.ForeignKey(
+        "matching.User",
+        verbose_name=_("user"),
+        on_delete=models.CASCADE,
+    )
+    image = models.ImageField(
+        verbose_name=_("image"),
+        upload_to=upload_to,
+    )
+
+    class Meta:
+        verbose_name = _("user image")
+        verbose_name_plural = _("user images")
+
+    def __str__(self):
+        return self.image.url

@@ -21,7 +21,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
-from ..models import User
+from ..models import User, UserImage
 
 csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
@@ -51,7 +51,18 @@ class UserAdmin(admin.ModelAdmin):
                     "is_active",
                     "is_staff",
                     "is_superuser",
+                    "is_verified",
                 ),
+            },
+        ),
+        (
+            _("Personal Info"),
+            {
+                "fields": (
+                    "department",
+                    "grade",
+                    "sex",
+                )
             },
         ),
     )
@@ -70,11 +81,19 @@ class UserAdmin(admin.ModelAdmin):
     list_display = (
         "username",
         "email",
+        "is_verified",
+        "department",
+        "grade",
+        "sex",
     )
     list_filter = (
         "is_staff",
         "is_superuser",
         "is_active",
+        "is_verified",
+        "department",
+        "grade",
+        "sex",
     )
     search_fields = ("username", "email")
     ordering = ("-created_at",)
@@ -227,3 +246,25 @@ class UserAdmin(admin.ModelAdmin):
             request.POST = request.POST.copy()
             request.POST["_continue"] = 1
         return super().response_add(request, obj, post_url_continue)
+
+
+from django.utils.safestring import mark_safe
+
+
+@admin.register(UserImage)
+class UserImageAdmin(admin.ModelAdmin):
+    list_display = ["pk", "image", "user", "preview"]
+    list_filter = ["user"]
+
+    def preview(self, instance):
+        style = "width:200px; height:auto;"
+        tag = '<a href="{}"><img src="{}" style="{}"/></a>'
+        return mark_safe(
+            tag.format(
+                instance.image.url,
+                instance.image.url,
+                style,
+            )
+        )
+
+    preview.short_description = "preview"

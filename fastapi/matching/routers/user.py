@@ -1,29 +1,62 @@
 from typing import Optional
 
 from matching.api import UserAPI
+from matching.dependencies.auth import login_required
 from matching.models import User
-from matching.schemas import CreateUserSchema, ReadUserSchema, UpdateUserSchema
+from matching.schemas import (
+    CreateUserSchema,
+    ReadUserImageSchema,
+    ReadUserSchema,
+    UpdateUserSchema,
+    VerifyCodeSchema,
+)
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request, UploadFile
 
 user_router = APIRouter()
 
 
-@user_router.get("/", response_model=ReadUserSchema)
+@user_router.get(
+    "/", response_model=ReadUserSchema, dependencies=[Depends(login_required)]
+)
 async def get(request: Request) -> Optional[User]:
     return UserAPI.get(request)
 
 
-@user_router.post("/", response_model=ReadUserSchema)
+@user_router.post(
+    "/",
+    response_model=ReadUserSchema,
+)
 async def create(request: Request, schema: CreateUserSchema) -> User:
     return UserAPI.create(request, schema)
 
 
-@user_router.put("/", response_model=ReadUserSchema)
+@user_router.put(
+    "/",
+    response_model=ReadUserSchema,
+    dependencies=[Depends(login_required)],
+)
 async def update(request: Request, schema: UpdateUserSchema) -> User:
     return UserAPI.update(request, schema)
 
 
-@user_router.delete("/")
+@user_router.delete("/", dependencies=[Depends(login_required)])
 async def delete(request: Request) -> None:
     return UserAPI.delete(request)
+
+
+@user_router.post(
+    "/verify-code",
+    response_model=ReadUserSchema,
+)
+async def verify_code(request: Request, schema: VerifyCodeSchema):
+    return UserAPI.verify_code(request, schema)
+
+
+@user_router.post(
+    "/upload-image",
+    response_model=ReadUserImageSchema,
+    dependencies=[Depends(login_required)],
+)
+async def upload_image(request: Request, file: UploadFile):
+    return UserAPI.upload_image(request, file)
